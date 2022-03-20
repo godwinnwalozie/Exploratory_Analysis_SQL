@@ -1,0 +1,98 @@
+-- Salary of higest paid employee
+SELECT MAX(salary)
+FROM staff 
+;
+
+-- Salary of Min paid employee
+SELECT Min(salary)
+FROM staff
+;
+
+-- Both Max and Min Salary
+SELECT MIN(salary) min_salary, Max(salary) max_salary
+FROM staff
+;
+
+-- show minimum and maximum salary in each department
+SELECT department, min(salary), max(salary)
+from staff
+group by department
+order by min(salary) desc
+;
+
+--show minimum and maximum salary by gender
+SELECT gender , min(salary), max(salary)
+from staff
+group by gender
+;
+
+-- how much is paid to staff pa year in salary
+SELECT sum(salary)
+from staff
+;
+
+
+-- how much does each department pay in salary each year, variance, standard deviation
+SELECT department, sum(salary), round(avg(salary),2) avg_salary, 
+round(var_pop(salary),2) variance, round(stddev_pop(salary),2) stand_deviation
+from staff
+group by rollup (department)
+;
+
+-- filtering data, list staff with salary greater than 100,000 dollars
+-- AND is uswd when both conditions are true
+select last_name, gender,department, salary from staff
+where salary > 100000 and department = 'Tools'
+;
+
+-- or is used if either of the two conditions are met
+select last_name, gender,department, salary from staff
+where salary > 100000 or department = 'Tools'
+;
+
+-- list department that start with the letter B and total salary
+SELECT  department , sum(salary) from staff
+where department LIKE 'B%'
+group by rollup(department)
+order by department asc
+;
+
+-- list department that start with the letter B and end with y
+SELECT  department , sum(salary) from staff
+where department LIKE 'B%y'
+Group by department
+;
+
+-- check unique dept and make it uppercase
+SELECT distinct UPPER(department) from staff
+;
+
+-- concatenate job title and department name
+SELECT job_title, department, job_title||'--'||department as concan from staff
+;
+
+-- list employess that have job titles that begins with the word assistant
+SELECT last_name, job_title, (job_title ilike '%Assistant%') is_assistant from staff
+;
+
+-- Substring function used to extrat a part of  string
+SELECT substring(job_title FROM 11) from staff
+where job_title LIKE 'Assistant%'
+;
+
+-- Overlay function used to replace part of a string
+SELECT OVERLAY( job_title placing 'Asst.' FROM 1 FOR 9 ) 
+FROM STAFF
+where job_title LIKE 'Assistant%'
+;
+
+
+-- Using SIMILAR EXPRESSION
+SELECT job_title from staff
+where job_title SIMILAR to '%Assistant%(II|III|IV)'
+;
+
+
+-- Using SIMILAR EXPRESSION Jobs matching E, P, S
+SELECT job_title from staff
+where job_title SIMILAR to '[EPS]%'
