@@ -1,0 +1,8 @@
+create table pet(
+	petid varcher,
+	name varchar,
+	kind varchar,
+	gender varchar,
+	age varchar,
+	ownerid varchar}
+)

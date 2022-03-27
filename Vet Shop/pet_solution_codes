@@ -1,0 +1,93 @@
+create table pets(
+	petid varchar,
+	name varchar,
+	kind varchar,
+	gender varchar,
+	age integer,
+	ownerid integer
+	);
+
+alter table pet
+rename to pets
+
+drop table if exists  pets cascade
+
+COPY pets FROM 'C:\Users\godwi\OneDrive\SQL Datasets\PostgresSQL\Vet Shop\pets.csv' DELIMITER ',' CSV HEADER;
+
+select * from pets ;
+select * from owners ;
+select * from procedureshistory where petid in ('I6-9459','G6-6501') ;
+
+create table owners(
+	ownerid integer,
+	name varchar,
+	surname varchar,
+	streetaddress varchar,
+	city varchar,
+	state varchar,
+	statefull varchar,
+	zipcode integer
+	)
+
+create table proceduredetails (
+	proceduretype varchar,
+	proceduresubcode integer,
+	description varchar,
+	price numeric
+	) ;
+	
+create table proceduresHistory (
+	petid varchar,
+	date date,
+	proceduretype varchar,
+	proceduresubcode integer
+	) ;
+
+---------------------------------------------
+--1. extract information on pet names and owner name side by side
+
+select p.petid,p.name pet_name,o.name, o.surname  from pets as p
+inner join owners as o
+on p.ownerid = o.ownerid
+
+
+--2. Find out which Pets from the clinic has procedures performed
+
+select * from pets as p
+left join procedureshistory as ph
+on p.petid = ph.petid and proceduretype is not null
+
+-- number of pets with procedure done
+select count(*) from pets as p
+left join procedureshistory as ph
+on p.petid = ph.petid and proceduretype is not null
+
+-- number of pets without procedure done
+select count(*) from pets as p
+left join procedureshistory as ph
+on p.petid = ph.petid and proceduretype is  null
+
+--3 match up all procedure performed to their descriptions
+select p.petid,p.name,pd.proceduretype ||' :'|| pd.description as procedure_description from pets as p
+left join procedureshistory as ph
+on p.petid = ph.petid 
+left join proceduredetails as pd
+on pd.proceduretype = ph.proceduretype 
+where pd.proceduretype is not null
+
+--concat (pd.proceduretype, ': ', pd.description)
+
+
+-- 4. Extract a table of cost(procedure price ) incured by owners of pets from clinic
+select pets.petid,pets.name,owners.name,owners.surname,proceduredetails.price from owners
+left join pets
+on owners.ownerid = pets.ownerid
+left join procedureshistory
+on pets.petid = procedureshistory.petid
+left join proceduredetails
+on procedureshistory.proceduretype = proceduredetails.proceduretype
+where price is not null
+
+
+
+
