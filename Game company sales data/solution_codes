@@ -1,0 +1,84 @@
+-- create table for the sales data
+create table game_sales(
+	rank serial primary key,
+	name varchar,
+	platform varchar,
+	year varchar,
+	genre varchar,
+	publisher varchar,
+	na_sales numeric,
+	eu_sales numeric,
+	jp_sales numeric,
+	other_sales numeric
+);
+
+--change table name
+ALTER table game_dates
+rename to game_sales;
+
+
+-- import csv for sales data
+copy game_sales from 'C:\Users\godwi\OneDrive\SQL Datasets\SQL _saved_files\Game Agency\Game_consoleSales.csv ' DELIMITER ',' CSV HEADER;
+
+
+-- create table for the dates table
+create table game_dates(
+	platform varchar,
+	FirstRetailAvailability date,
+	Discontinued date,
+	UnitsSoldMillions numeric,
+	comment varchar
+	);
+	
+copy game_dates from 'C:\Users\godwi\OneDrive\SQL Datasets\SQL _saved_files\Game Agency\Game_consoleDates.csv ' DELIMITER ',' CSV HEADER;
+
+select * from game_dates;
+select * from game_sales;
+
+
+
+-- ANALYSIS - THE CHALLENGE
+
+-- *********************************************************************************
+-- 1.Calculate what % of Global Sales were made in North America
+select round (sum(na_sales) /(sum(na_sales) + sum(eu_sales) + sum(jp_sales) + sum(other_sales)),2)*100 as percentage_na_sales
+from game_sales 
+
+--2.Extract a view of the console game titles ordered by platform name in ascending order and Year of release in descending order
+
+select gs.platform ,name, genre, firstretailavailability from game_sales as gs
+join game_dates as gd
+on gs.platform = gd.platform
+order by gs.platform ASC , firstretailavailability DESC ;
+
+-- 3 For each game title extract the first four letters of the publisher's name
+select gs.platform ,name, substring(publisher for 4 from 1) from game_sales as gs
+join game_dates as gd
+on gs.platform = gd.platform
+
+--4.Display all console platforms which were released either just before Black Friday or just before Christmas (in any year)
+select firstretailavailability, gd.platform, name, TO_CHAR(firstretailavailability,'dd-mm')
+from game_sales as gs
+join game_dates as gd
+on gs.platform = gd.platform and to_char(firstretailavailability,'dd-mm')< '20-11' or  to_char(firstretailavailability,'dd-mm')< '24-12'
+order by to_char(firstretailavailability,'dd-mm')
+
+-- 5. Order the platforms by their longevity in ascending order (i.e. the platform which was available for the longest at the bottom)
+
+select (discontinued - firstretailavailability ) as longevity_days,firstretailavailability, discontinued, gd.platform, name
+from game_sales as gs
+join game_dates as gd
+on gs.platform = gd.platform 
+order by longevity_days ASC
+
+--6.Demonstrate how to deal with the Game Year column if the client wants to convert it to a different data type
+select cast(year as integer) from game_sales
+
+--7.Provide recommendations on how to deal with missing data in the file
+-- use coalesce to replace values
+
+
+select * from game_sales
+full outer join game_dates 
+on game_sales.platform = game_dates.platform
+where game_sales is null or game_dates is null
