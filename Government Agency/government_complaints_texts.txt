@@ -26,30 +26,37 @@ create TABLE complaints (
 --COPY complaints FROM 'C:\Users\godwi\OneDrive\SQL Datasets\SQL _saved_files\complaints.csv ' DELIMITER ',' CSV HEADER
 ;
 
+
+
 SELECT * FROM complaints;
 
 
 
--- How many customer complaint were received and sent on te same day
+-- How many customer complaint were received and sent on the same day
+create or replace view complaint_same_day as
 SELECT count(*) from complaints 
 where date_received = date_sent
 
 -- Extract the complaints received in the state of New York
+create or replace view ny_complaints as
 SELECT * 
 from complaints
 where state_name = 'NY'
 
 -- Extract the complaints received in the state of New York and Califonis
+create or replace view ny_ca_ny as
 SELECT * 
 from complaints
 where state_name = 'NY' OR state_name = 'CA'
 
 -- Extract the rows with the word 'Credit' in the Product field
+create or replace view credit_word as
 SELECT *
 from complaints
 where product_name LIKE '%Credit%'
 
 -- Extract the rows with the word 'Credit' in the Product field
+create or replace view product_late as
 SELECT *
 from complaints
 where issue LIKE '%Late%'
