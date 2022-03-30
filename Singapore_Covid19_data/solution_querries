@@ -1,0 +1,92 @@
+CREATE TABLE sg_data(
+	DATE  date,
+	Daily_Confirmed  integer,
+	False_Positives_Found  integer,
+	Cumulative_Confirmed bigint,                           
+  	Daily_Discharged integer,                                              
+  	Passed_but_not_due_to_COVID  integer,                              
+  	Cumulative_Discharged    bigint,                                     
+  	Discharged_to_Isolation  bigint,                                     
+  	Still_Hospitalised   bigint,                                   
+  	Daily_Deaths  integer,                                                
+  	Cumulative_Deaths bigint,
+	Tested_positive_demise  integer ,
+ 	Daily_Imported integer ,
+  	Daily_Local_transmission   INTEGER ,
+  	Local_cases_residing_in_dorms_MOH_report iNTEGER, 
+  	Local_cases_not_residing_in_doms_MOH_report INTEGER,
+  	Intensive_Care_Unit_ICU  INTEGER, 
+  	General_Wards_MOH_report   INTEGER ,
+  	In_Isolation_MOH_report  INTEGER ,
+  	Total_Completed_Isolation_MOH_report  INTEGER ,
+  	Total_Hospital_Discharged_MOH_report INTEGER ,
+  	Requires_Oxygen_Supplementation_or_Unstable  INTEGER ,
+  	Linked_community_cases   INTEGER ,
+  	Unlinked_community_cases   INTEGER ,
+  	Phase VARCHAR,
+  	Cumulative_Vaccine_Doses  INTEGER ,
+  	Cumulative_Individuals_Vaccinated  INTEGER ,
+  	Cumulative_Individuals_Vaccination_Completed INTEGER ,
+  	Perc_population_completed_at_least_one_dose   varchar,
+  	Perc_population_completed_vaccination varchar,
+  	Sinovac_vaccine_doses INTEGER ,
+  	Cumulative_individuals_using_Sinovac_vaccine   INTEGER ,
+  	Doses_of_other_vaccines_recognised_by_WHO INTEGER ,
+  	Cumulative_individuals_using_other_vaccines_recognised_by_WHO INTEGER ,
+  	Number_taken_booster_shots   INTEGER ,
+  	Perc_population_taken_booster_shots  varchar
+  )
+  ;
+  
+  drop table if exists sg_data  cascade
+
+select* from sg_data
+
+COPY sg_data FROM 'C:\Users\godwi\OneDrive\SQL Datasets\PostgresSQL\Singapore_Covid19_data\Covid_19.csv' DELIMITER ',' CSV HEADER;
+
+
+
+
+-- statistics of daily confirmed cases and deaths
+create or replace view month_stat as
+select to_char(date,'month'),to_char(date,'yyyy')as year,
+sum (daily_confirmed) daily_confirmed , 
+sum(daily_deaths) daily_deaths, 
+sum (daily_confirmed) 
+from sg_data
+group by (to_char(date,'month'),sg_data.date)
+order by date asc
+
+
+drop view if exists month_stat cascade
+
+
+
+-- group by year
+create or replace view yearly_stat as
+select  distinct extract (year from date)as year,sum(false_positives_found) as false_positive,  sum(daily_confirmed) as total_cases, 
+sum(daily_discharged) as discharged , sum(intensive_care_unit_icu) as icu,
+sum(daily_deaths)as total_deaths from sg_data
+group by extract (year from date)
+order by extract (year from date)
+
+
+drop view if exists yearly_stat cascade
+
+---Moving 7-day average
+create or replace view  moving_7 as
+select date, daily_confirmed,
+ round (avg(daily_confirmed) OVER 
+		(ORDER BY date
+		 ROWS BETWEEN 6 PRECEDING AND CURRENT ROW ),2)
+		 as moving_average_7day
+		 from sg_data
+		 order by date desc
+		 
+		 
+	SELECT current_user,
+       user,
+       session_user,
+       current_database(),
+       current_catalog,
+       version();
