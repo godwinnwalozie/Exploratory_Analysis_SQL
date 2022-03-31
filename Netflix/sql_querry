@@ -1,0 +1,50 @@
+create table nf_rev_2020(
+	area varchar,
+	years varchar,
+	revenue decimal
+);
+
+ ALTER TABLE nf_sub_2020 ADD COLUMN id SERIAL ;
+
+copy nf_rev_2020 from 'C:\Users\godwi\OneDrive\SQL Datasets\PostgresSQL\Netflix\DataNetflixRevenue2020_V2.csv' DELIMITER ',' CSV HEADER
+copy nf_sub_2020 from 'C:\Users\godwi\OneDrive\SQL Datasets\PostgresSQL\Netflix\DataNetflixSubscriber2020_V2.csv' DELIMITER ',' CSV HEADER
+
+
+create table nf_sub_2020(
+	area varchar,
+	years varchar,
+	subscribers decimal
+);
+
+
+drop table if exists nf_rev_2020 cascade
+drop table if exists nf_sub_2020 cascade
+
+select * from nf_rev_2020
+select * from nf_sub_2020
+
+create or replace view big_view as
+SELECT t1.id, t1.area, t1.years, t1.revenue, t2.subscribers from nf_rev_2020 t1
+INNER JOIN nf_sub_2020 t2
+on t1.id = t2.id
+
+
+--GROUP BY AREA
+SELECT distinct area , sum(revenue), sum(subscribers),ROUND (sum(revenue)/sum(subscribers),2) as avg_rev_per_sub  from big_view
+group by cube (area)
+order by sum(revenue) desc ;
+
+--GROUP BY QUARTER 
+SELECT sum(revenue) , sum(subscribers),
+CASE
+WHEN years LIKE '%2018%' THEN '2018'
+WHEN years LIKE '%2019%' THEN '2019'
+WHEN years LIKE '%2020%' THEN '2020'
+ELSE 'NILL'
+END as yearly
+from big_view
+group by rollup ( yearly)
+order by yearly desc
+
+
+
