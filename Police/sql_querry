@@ -1,0 +1,87 @@
+/*
+# Remove the column that only contains missing values
+# Do men or women speed more often?
+# Does gender affect who gets searched during a stop?
+# During a search, how often is the driver frisked?
+# Which year had the least number of stops?
+# When a man is pulled over, how often is it for speeding?
+# How does drug activity change by time of day?
+# Do most stops occur at night? 
+*/
+
+/* CREATE TABLE */
+CREATE TABLE IF NOT EXISTS pp_data(
+stop_date date,
+stop_time time,
+county_name INT,
+driver_gender VARCHAR( 100 ),
+driver_age_raw INT,
+driver_age INT,
+driver_race VARCHAR,
+violation_raw VARCHAR,
+violation VARCHAR,
+search_conducted VARCHAR,
+search_type VARCHAR,
+stop_outcome VARCHAR,
+is_arrested VARCHAR,
+stop_duration VARCHAR,
+drugs_related_stop VARCHAR
+);
+
+COPY pp_data from 'C:\Users\godwi\GitHub\SQL\Police\police_project.csv' delimiter ',' csv header
+
+-- drop table pp_data
+
+
+--  Remove the column that only contains missing values
+alter table pp_data
+drop column county_name
+
+-- Do men or women speed more often?
+select driver_gender, count(violation) as no_of_violation from pp_data
+where violation LIKE '%Speeding%'
+group by driver_gender
+Order by count(violation) DESC
+
+-- % Number of male Speeding
+CREATE OR REPLACE VIEW  m_speed AS
+select driver_gender, count(violation) as no_of_violation from pp_data
+where violation LIKE '%Speeding%' AND driver_gender LIKE '%M%'
+group by driver_gender
+
+
+-- % Number of female Speeding
+CREATE OR REPLACE VIEW  f_speed AS
+select driver_gender, count(violation) as no_of_violation from pp_data
+where violation LIKE '%Speeding%' AND driver_gender LIKE '%F%'
+group by driver_gender
+
+
+
+-- % Number male to female speeding violation
+CREATE OR REPLACE VIEW compare as
+select driver_gender , violation ,
+-----------------------------------
+count(CASE
+WHEN driver_gender = 'F' AND violation = 'Speeding'  THEN 'fs'
+ELSE 'ms'
+END)
+-----
+---sum (CASE
+---WHEN driver_gender = 'M' AND violation = 'Speeding'  THEN 1
+
+---end) male_speeding 
+-----
+from 
+pp_data
+where violation ilike '%Speeding%'
+group by driver_gender , violation 
+
+
+select male_speeding, female_speeding from compare
+
+
+--Does gender affect who gets searched during a stop?
+select driver_gender , count( search_conducted) from pp_data
+group  by driver_gender
+
