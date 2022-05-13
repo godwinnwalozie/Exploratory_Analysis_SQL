@@ -38,6 +38,7 @@ alter table pp_data
 drop column county_name
 
 -- Do men or women speed more often?
+CREATE OR REPLACE VIEW  m_vs_f__speed AS
 select driver_gender, count(violation) as no_of_violation from pp_data
 where violation LIKE '%Speeding%'
 group by driver_gender
@@ -55,7 +56,6 @@ CREATE OR REPLACE VIEW  f_speed AS
 select driver_gender, count(violation) as no_of_violation from pp_data
 where violation LIKE '%Speeding%' AND driver_gender LIKE '%F%'
 group by driver_gender
-
 
 
 -- % Number male to female speeding violation
@@ -78,19 +78,23 @@ where violation ilike '%Speeding%'
 group by driver_gender , violation 
 
 
-select male_speeding, female_speeding from compare
+drop view if exists compare cascade
 
 
 --Does gender affect who gets searched during a stop?
+CREATE OR REPLACE VIEW searched_gender as
 select driver_gender , count( search_conducted) from pp_data
+where search_conducted = 'TRUE'
 group  by driver_gender
 
 -- During a search, how often is the driver frisked?
+CREATE OR REPLACE VIEW frisked as
 select count( is_arrested) from pp_data
 where is_arrested = 'TRUE'
 
 
 -- Which year had the least number of stops?
+CREATE OR REPLACE VIEW year_stops as
 select distinct (extract (year from stop_date)), count (extract (year from stop_date)) from pp_data
 group by distinct (extract (year from stop_date))
 order by (extract (year from stop_date)) ASC
@@ -105,7 +109,7 @@ else 'night'
 end night_stop
 from pp_data
 
-
+CREATE OR REPLACE VIEW  night_stops_2 as
 select night_stop, count(night_stop) from night_stops
 group by night_stop
 
