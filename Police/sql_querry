@@ -92,6 +92,12 @@ CREATE OR REPLACE VIEW frisked as
 select count( is_arrested) from pp_data
 where is_arrested = 'TRUE'
 
+-- During a search, how often is the driver frisked?
+CREATE OR REPLACE VIEW frisked_compare as
+select is_arrested, count( is_arrested) from pp_data
+group by is_arrested
+
+
 
 -- Which year had the least number of stops?
 CREATE OR REPLACE VIEW year_stops as
