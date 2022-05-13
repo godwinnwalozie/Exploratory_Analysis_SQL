@@ -1,0 +1,62 @@
+CREATE TABLE deaths(
+    serial	varchar(300),
+    ID	varchar(300),
+    Date	Date,
+    DateType	numeric,
+    Age	numeric,
+    Sex	varchar(300),
+    Race	varchar(300),
+    ResidenceCity	varchar(300),
+    ResidenceCounty	varchar(300),
+    ResidenceState	varchar(300),
+    DeathCity	varchar(300),
+    DeathCounty	varchar(300),
+    Location	varchar(300),
+    LocationifOther	varchar(300),
+    DescriptionofInjury	varchar(300),
+    InjuryPlace	varchar(300),
+    InjuryCity	varchar(300),
+    InjuryCounty	varchar(300),
+    InjuryState	varchar(300),
+    COD	varchar(300),
+    OtherSignifican	varchar(300),
+    Heroin	numeric,
+    Cocaine	numeric,
+    Fentanyl	numeric,
+    Fentanyl_Analogue	numeric,
+    Oxycodone	numeric,
+    Oxymorphone	numeric,
+    Ethanol	numeric,
+    Hydrocodone	numeric,
+    Benzodiazepine	numeric,
+    Methadone	numeric,
+    Amphet	numeric,
+    Tramad	numeric,
+    Morphine_NotHeroin	VARCHAR,
+    Hydromorphone	numeric,
+    Other	varchar,
+    OpiateNOS	numeric,
+    AnyOpioid	numeric,
+    MannerofDeath	varchar(300),
+    DeathCityGeo	varchar(300),
+    ResidenceCityGeo	varchar(300),
+    InjuryCityGeo	varchar(300)
+);
+
+copy deaths from 'C:\Users\godwi\GitHub\SQL\Drug_deaths\Drug_deaths\deaths.csv' delimiter ',' csv HEADER
+
+drop table deaths
+
+select * from deaths
+limit 10
+
+
+-- find unique county with ?
+select distinct residencecounty from deaths
+
+-- find count of unique county with ?
+select count (distinct residencecounty) from deaths
+-- 84 counties
+
+-- Investigate the county with highest deaths
+select residencecounty ,sum(heroin,tsq cocaine) from deaths
