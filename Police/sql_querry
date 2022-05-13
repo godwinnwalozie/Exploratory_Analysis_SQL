@@ -85,3 +85,12 @@ select male_speeding, female_speeding from compare
 select driver_gender , count( search_conducted) from pp_data
 group  by driver_gender
 
+-- During a search, how often is the driver frisked?
+select count( is_arrested) from pp_data
+where is_arrested = 'TRUE'
+
+
+-- Which year had the least number of stops?
+select distinct (extract (year from stop_date)), count (extract (year from stop_date)) from pp_data
+group by distinct (extract (year from stop_date))
+order by (extract (year from stop_date)) ASC
