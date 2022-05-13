@@ -94,3 +94,18 @@ where is_arrested = 'TRUE'
 select distinct (extract (year from stop_date)), count (extract (year from stop_date)) from pp_data
 group by distinct (extract (year from stop_date))
 order by (extract (year from stop_date)) ASC
+
+
+--- Do most stops occur at night? 
+CREATE OR REPLACE VIEW  night_stops as
+select stop_time, cast(extract(hour from stop_time)as INTEGER),
+CASE
+WHEN cast(extract(hour from stop_time)as INTEGER) between 8 and 18 then 'day'
+else 'night'
+end night_stop
+from pp_data
+
+
+select night_stop, count(night_stop) from night_stops
+group by night_stop
+
