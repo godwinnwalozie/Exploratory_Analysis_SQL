@@ -1,0 +1,31 @@
+ /* CREATE TABLE */
+CREATE TABLE IF NOT EXISTS revdata(
+CampaignID varchar,
+Timestamp VARCHAR( 100 ),
+Date VARCHAR( 100 ),
+InventoryType VARCHAR( 100 ),
+AdType VARCHAR( 100 ),
+Available_Impressions VARCHAR( 100 ),
+Matched_Queries VARCHAR( 100 ),
+Impressions VARCHAR( 100 ),
+Clicks VARCHAR( 100 ),
+Spend VARCHAR( 100 ),
+Fee VARCHAR( 100 ),
+Revenue VARCHAR( 100 ),
+CTR VARCHAR( 100 ),
+CPM VARCHAR( 100 ),
+CPC VARCHAR( 100 )
+);
+
+drop table if exists revdata cascade
+
+copy revdata from 'C:\Users\godwi\GitHub\SQL\Game of Thrones\Ads Data Revenue.csv' delimiter ',' csv header
+
+
+select * from revdata
+
+-- calculate the total revenue 
+create or replace view revdat2 as
+select * , cast(substring(spend from 2 )as decimal) from revdata 
+
+
