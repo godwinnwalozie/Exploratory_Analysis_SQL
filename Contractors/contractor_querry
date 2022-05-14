@@ -1,0 +1,61 @@
+/* CREATE TABLE */
+CREATE TABLE IF NOT EXISTS contractors(
+Description VARCHAR( 100 ),
+Category VARCHAR( 100 ),
+Status VARCHAR( 100 ),
+ExpirationDate DATE,
+BusinessName VARCHAR,
+Applicant VARCHAR( 100 ),
+DayPhone varchar
+);
+
+copy contractors from 'C:\Users\godwi\GitHub\SQL\Contractors\licensed-contractors.csv ' delimiter ','  csv header
+
+SELECT * FROM contractors
+
+alter table contractors
+alter column dayphone type varchar
+
+-- create an gmail for all contrators with firstname
+select * , lower(left(applicant,3)) || '@gmail.com' email from contractors
+
+select * , lower(substring(applicant from '[^ ]+'::text)) || '@gmail.com' email from contractors
+
+
+-- number of contractors without null values
+select count(applicant) from contractors
+where applicant is not null 
+
+-- number of contractors is null values
+select count(applicant) from contractors
+where applicant is null 
+
+-- number of contractors with busines sname is null
+select count (applicant), businessname from contractors
+where businessname is null 
+group by businessname
+
+-- number of contractors with busines sname not null
+select count (applicant) from contractors
+where businessname is not null 
+
+-- number of contractors with dual duplicate business name
+select  applicant, businessname, count (businessname) from contractors
+group by businessname, applicant
+having (SELECT count (businessname) > 1) and businessname is not null
+
+-- fnd name JOSEPH KLINECZKO
+select  * from contractors
+where applicant = 'JOSEPH KLINECZKO'
+
+--Group by categrory
+select distinct category,count(businessname) from contractors
+group by category
+order by count( businessname) DESC
+limit 5
+
+--Group by description
+select distinct description, count(businessname) from contractors
+group by description
+order by count( businessname) DESC
+limit 5
