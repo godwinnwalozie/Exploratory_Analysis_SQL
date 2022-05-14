@@ -59,3 +59,13 @@ select distinct description, count(businessname) from contractors
 group by description
 order by count( businessname) DESC
 limit 5
+
+
+--which expiration date falls on december ? use 'extract function'
+select expirationdate, extract('Month' from  expirationdate) exdec from contractors
+where  extract('Month' from  expirationdate) = 12
+
+
+--which expiration date falls on december ? use to_char func
+select expirationdate, TO_CHAR (expirationdate, 'Month' ) from contractors
+where TO_CHAR (expirationdate, 'Month' ) like '%December%'
