@@ -7,25 +7,38 @@ InventoryType VARCHAR( 100 ),
 AdType VARCHAR( 100 ),
 Available_Impressions VARCHAR( 100 ),
 Matched_Queries VARCHAR( 100 ),
-Impressions VARCHAR( 100 ),
-Clicks VARCHAR( 100 ),
-Spend VARCHAR( 100 ),
+Impressions INTEGER,
+Clicks INTEGER,
+Spend NUMERIC,
 Fee VARCHAR( 100 ),
-Revenue VARCHAR( 100 ),
+Revenue NUMERIC,
 CTR VARCHAR( 100 ),
 CPM VARCHAR( 100 ),
 CPC VARCHAR( 100 )
+
 );
 
 drop table if exists revdata cascade
 
-copy revdata from 'C:\Users\godwi\GitHub\SQL\Game of Thrones\Ads Data Revenue.csv' delimiter ',' csv header
+copy revdata from 'C:\Users\godwi\GitHub\SQL\Game of Thrones\rev_data_got.csv' delimiter ',' csv header
 
 
-select * from revdata
 
--- calculate the total revenue 
-create or replace view revdat2 as
-select * , cast(substring(spend from 2 )as decimal) from revdata 
+-- find the sum of revenue for whole year
+select sum(spend) from revdata
+
+-- find sum of revenue by months in 2014`
+select to_char (to_date(date, 'DD-MM-YYY'), 'Month' ), sum(spend)total_spend, sum(revenue)total_rev from revdata
+group by to_date(date, 'DD-MM-YYY'), to_char (to_date(date, 'DD-MM-YYY'), 'Month' )
+order by sum(spend) DESC
 
 
+ -- find the difference of spend from average spend
+ select 
+ round(stddev_pop(spend),2)standard_div,
+ round(var_pop(spend),2) variance,
+ round(sum(spend),2)total_spend ,
+ count(spend)count ,
+ min(spend)min_sppend,
+ max(spend) max_spend
+ from revdata
