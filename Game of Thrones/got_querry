@@ -15,7 +15,6 @@ Revenue NUMERIC,
 CTR VARCHAR( 100 ),
 CPM VARCHAR( 100 ),
 CPC VARCHAR( 100 )
-
 );
 
 drop table if exists revdata cascade
