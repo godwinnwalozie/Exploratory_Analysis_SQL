@@ -1,3 +1,5 @@
+## SQL Querry to Power BI
+
 ![Screenshot 2022-05-27 215057](https://user-images.githubusercontent.com/42586445/170788005-2cfd2236-8eee-480d-a131-234c681e06d6.jpg)
 
 
