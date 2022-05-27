@@ -1,0 +1,40 @@
+ /* CREATE TABLE */
+CREATE TABLE IF NOT EXISTS accident(
+Id VARCHAR( 100 ),
+DistrictName VARCHAR( 100 ),
+NeighborhoodName VARCHAR( 100 ),
+Street VARCHAR( 100 ),
+Weekday VARCHAR( 100 ),
+Month VARCHAR( 100 ),
+Day INTEGER,
+Hour INTEGER,
+Partoftheday VARCHAR( 100 ),
+Mildinjuries INTEGER,
+Seriousinjuries INTEGER,
+Victims INTEGER,
+Vehiclesinvolved INTEGER,
+Longitude DECIMAL( 10 , 2 ),
+Latitude DECIMAL( 10 , 2 )
+);
+
+copy accident from 'C:\Users\godwi\GitHub\SQL\barcelona\accidents_2017.csv' delimiter ',' csv header
+
+CREATE OR REPLACE VIEW all_data as
+select * from accident
+
+-- Find the rate of accident by month in 2017
+CREATE OR REPLACE VIEW accident_month as
+select month , sum(victims)m_sum, (select sum(victims) from accident) as total  from accident
+group by month
+
+
+-- Find the rate of accident by month in 2017 with %
+CREATE OR REPLACE VIEW accident_month_perc as
+select month, m_sum, round((m_sum/ round(total,2)*100),2)percentage from accident_month
+group by month,m_sum,round((m_sum/ round(total,2)*100),2)
+order by m_sum  DESC
+
+
+
+
+
