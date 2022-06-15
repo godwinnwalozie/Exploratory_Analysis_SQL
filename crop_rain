@@ -1,0 +1,44 @@
+ /* CREATE TABLE */
+CREATE TABLE IF NOT EXISTS crop_rain(
+State integer,
+Year integer,
+Crop integer,
+Area numeric,
+Rain numeric,
+Production numeric
+);
+
+copy crop_rain from 'C:\Users\godwi\GitHub\Machine-Learning--Prediction_Classification_Regression\crops_rainfall\final_dataSet_nonan.csv' delimiter ',' csv header
+
+select * from crop_rain
+
+---drop table if exists crop_rain;
+
+create or replace view model as
+select * ,
+case
+when state = 0  then  'Jammu and Kashmir'
+when state = 1  then  'Jharkhand'
+when state = 2  then  'Bihar'
+when state = 3  then  'Uttarakhand'
+when state = 4  then  'Chhattisgarh'
+when state = 5  then  'Punjab'
+when state = 6  then  'Arunachal Pradesh'
+when state = 7  then  'Odisha'
+when state = 8  then  'Kerala'
+when state = 9  then  'Himachal Pradesh'
+when state = 10  then 'Tamil Nadu'
+when state = 11  then  'Andaman and Nicobar Islands'
+else 'missing' 
+end as state_label
+from crop_rain;
+
+select state from crop_rain
+where state = 0;
+
+alter table if exists crop_rain2
+rename to crop_rain;
+
+select state_label, crop, area from model
+group by state_label,state, year, crop,area,rain,production
+order by state_label desc
